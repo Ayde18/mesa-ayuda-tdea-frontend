@@ -1,4 +1,8 @@
-const API_BASE_URL = 'http://localhost:5000/api'; // Reemplaza con la URL de tu backend .NET
+// App.js
+
+// CONSEJO: Reemplaza con la URL de tu backend .NET en Azure cuando lo tengas desplegado.
+// Por ahora, para pruebas locales de la API, localhost está bien, pero para Vercel necesitarás la URL pública.
+const API_BASE_URL = 'http://localhost:5000/api'; 
 
 // --- UTILITIES ---
 function getToken() {
@@ -50,7 +54,6 @@ async function fetchData(url, method = 'GET', data = null) {
             const errorData = await response.json().catch(() => ({ message: response.statusText }));
             throw new Error(errorData.message || 'Something went wrong');
         }
-        // Algunas respuestas pueden no tener cuerpo (ej. 204 No Content)
         if (response.status === 204) return null;
         return await response.json();
     } catch (error) {
@@ -60,11 +63,19 @@ async function fetchData(url, method = 'GET', data = null) {
     }
 }
 
-// --- AUTHENTICATION ---
+// --- AUTHENTICATION (manteniendo funciones locales si las necesitas para registro/login tradicional) ---
+// NOTA: handleLogin ya no será llamado por el botón de CAS, pero se mantiene si tienes un formulario local.
 async function handleLogin(event) {
-    event.preventDefault();
-    const email = document.getElementById('login-email').value;
-    const password = document.getElementById('login-password').value;
+    // Esta función solo se usaría si tuvieras un formulario de login con email/password en tu HTML
+    // Si la autenticación es solo por CAS, esta función no se ejecutará para el login principal.
+    if (event) event.preventDefault(); // Asegura que event existe
+    const email = document.getElementById('login-email')?.value; // Usar optional chaining
+    const password = document.getElementById('login-password')?.value; // Usar optional chaining
+
+    if (!email || !password) {
+        alert('Por favor, ingresa tu correo y contraseña.');
+        return;
+    }
 
     try {
         const data = await fetchData(`${API_BASE_URL}/Auth/login`, 'POST', { email, password });
@@ -95,7 +106,7 @@ async function handleRegister(event) {
     try {
         await fetchData(`${API_BASE_URL}/Auth/register`, 'POST', registerData);
         alert('¡Registro exitoso! Por favor, inicia sesión.');
-        showLoginForm(); // Muestra el formulario de login
+        showLoginForm(); // Muestra el formulario de login (ahora con el botón CAS)
     } catch (error) {
         // Error ya manejado por fetchData
     }
@@ -108,49 +119,151 @@ function handleLogout() {
 }
 
 // --- UI RENDERING ---
-const appContent = document.getElementById('app-content');
-const mainNav = document.getElementById('main-nav');
-const authSection = document.getElementById('auth-section');
+const appContentWrapper = document.getElementById('app-content-wrapper'); // Contenedor principal de main
+const appContent = document.getElementById('app-content'); // Sección donde se renderiza el contenido dinámico
+const headerNavLinks = document.getElementById('header-nav-links'); // Para la navegación del header
 
+function showLoginForm() {
+    const loginContainer = document.getElementById('login-form-container');
+    const registerContainer = document.getElementById('register-form-container');
+    const authSection = document.getElementById('auth-section');
+    
+    // Ocultar elementos de bienvenida si están presentes
+    document.querySelector('.welcome-title')?.style.display = 'none';
+    document.querySelector('.welcome-message')?.style.display = 'none';
+    document.querySelector('.centered-tdea-logo')?.style.display = 'block'; // Mostrar logo central
+
+    if (authSection) authSection.style.display = 'block';
+    if (loginContainer) loginContainer.style.display = 'block';
+    if (registerContainer) registerContainer.style.display = 'none';
+
+    // Asegurarse de que el listener del botón CAS esté activo
+    const casLoginButton = document.getElementById('cas-login-button');
+    if (casLoginButton) {
+        // Eliminar listener previo para evitar duplicados si la función se llama varias veces
+        casLoginButton.removeEventListener('click', redirectToCasLogin); 
+        casLoginButton.addEventListener('click', redirectToCasLogin);
+    }
+}
+
+function showRegisterForm() {
+    const loginContainer = document.getElementById('login-form-container');
+    const registerContainer = document.getElementById('register-form-container');
+    const authSection = document.getElementById('auth-section');
+
+    // Ocultar elementos de bienvenida si están presentes
+    document.querySelector('.welcome-title')?.style.display = 'none';
+    document.querySelector('.welcome-message')?.style.display = 'none';
+    document.querySelector('.centered-tdea-logo')?.style.display = 'block'; // Mostrar logo central
+
+    if (authSection) authSection.style.display = 'block';
+    if (loginContainer) loginContainer.style.display = 'none';
+    if (registerContainer) registerContainer.style.display = 'block';
+
+    // Asegurarse de que el listener del formulario de registro esté activo
+    const registerForm = document.getElementById('register-form');
+    if (registerForm) {
+        registerForm.removeEventListener('submit', handleRegister); // Evitar duplicados
+        registerForm.addEventListener('submit', handleRegister);
+    }
+}
+
+// Redirecciona al CAS del TdeA
+function redirectToCasLogin() {
+    const casBaseUrl = 'https://campus.tdea.edu.co/cas/login';
+    // ¡¡IMPORTANTE: Esta URL debe ser la URL de tu BACKEND que manejará el ticket de CAS!!
+    // Por ejemplo: 'https://tu-dominio-de-backend.com/auth/cas/callback'
+    // O, si tu backend es el mismo dominio que tu frontend (ej. si usas un proxy inverso en Vercel
+    // o un despliegue monolítico), entonces la ruta sería algo como:
+    // 'https://mesa-ayuda-tdea-frontend.vercel.app/api/cas_callback'
+    // POR AHORA, para que el botón haga ALGO, usaré la URL de tu Vercel con una ruta de ejemplo.
+    // ESTO SOLO FUNCIONARÁ PARA REDIRIGIR AL CAS, PERO NO PARA PROCESAR LA AUTENTICACIÓN COMPLETA SIN UN BACKEND.
+    const serviceUrl = encodeURIComponent('https://mesa-ayuda-tdea-frontend.vercel.app/auth/cas/callback'); 
+    
+    const casLoginUrl = `${casBaseUrl}?service=${serviceUrl}`;
+    window.location.href = casLoginUrl;
+}
+
+
+// Función principal para renderizar la aplicación
 function renderApp() {
-    mainNav.innerHTML = ''; // Limpiar navegación
-    appContent.innerHTML = ''; // Limpiar contenido principal
+    // Limpiar navegación del header para reconstruirla
+    if (headerNavLinks) headerNavLinks.innerHTML = ''; 
+
+    // Aquí ya no limpiamos appContent.innerHTML completamente, sino que manejamos la visibilidad
+    // de las secciones de autenticación, y App.js manejará el resto del contenido dinámico.
 
     if (!isUserLoggedIn()) {
-        // Mostrar formularios de autenticación
-        authSection.style.display = 'block';
-        appContent.appendChild(authSection);
-        document.getElementById('login-form').addEventListener('submit', handleLogin);
-        document.getElementById('register-form').addEventListener('submit', handleRegister);
-        document.getElementById('show-register').addEventListener('click', (e) => { e.preventDefault(); showRegisterForm(); });
-        document.getElementById('show-login').addEventListener('click', (e) => { e.preventDefault(); showLoginForm(); });
-        return;
+        // Si el usuario NO está logueado, mostrar la sección de autenticación
+        showLoginForm(); // Muestra el botón CAS y oculta el registro
+
+        // Actualiza la navegación del header para mostrar Iniciar Sesión/Registro
+        if (headerNavLinks) {
+            headerNavLinks.innerHTML = `
+                <li><a href="#" id="login-header-link">Iniciar sesión</a></li>
+                <li><a href="#" id="register-header-link">Registro de usuarios</a></li>
+            `;
+            document.getElementById('login-header-link')?.addEventListener('click', (e) => { e.preventDefault(); showLoginForm(); });
+            document.getElementById('register-header-link')?.addEventListener('click', (e) => { e.preventDefault(); showRegisterForm(); });
+        }
+        // Oculta otros contenidos que no son de autenticación
+        document.getElementById('dashboard-view')?.style.display = 'none';
+        document.getElementById('create-request-view')?.style.display = 'none';
+        document.getElementById('my-requests-view')?.style.display = 'none';
+        document.getElementById('request-detail-view')?.style.display = 'none';
+        document.getElementById('admin-panel-view')?.style.display = 'none';
+        document.getElementById('collab-panel-view')?.style.display = 'none';
+
+        // Muestra el logo central
+        document.querySelector('.centered-tdea-logo')?.style.display = 'block';
+        // Oculta los mensajes de bienvenida (ya manejado en showLoginForm/showRegisterForm)
+        document.querySelector('.welcome-title')?.style.display = 'none';
+        document.querySelector('.welcome-message')?.style.display = 'none';
+
+
+        // Esconder el footer al inicio de sesión (como en la imagen de TdeA)
+        document.querySelector('.main-footer')?.style.display = 'none';
+
+        return; // Detener la función aquí si no está logueado
     }
 
-    authSection.style.display = 'none'; // Ocultar formularios de autenticación
+    // Si el usuario SÍ está logueado
+    const authSection = document.getElementById('auth-section');
+    if (authSection) authSection.style.display = 'none'; // Ocultar formularios de autenticación
+
+    // Muestra el footer si el usuario está logueado y ve el resto de la app
+    document.querySelector('.main-footer')?.style.display = 'block';
+
+    // Oculta el logo central y los mensajes de bienvenida
+    document.querySelector('.centered-tdea-logo')?.style.display = 'none';
+    document.querySelector('.welcome-title')?.style.display = 'none';
+    document.querySelector('.welcome-message')?.style.display = 'none';
+
 
     const userName = localStorage.getItem('userName') || 'Usuario';
-    mainNav.innerHTML = `
-        <li><span>Hola, ${userName}</span></li>
-        ${hasRole('Solicitante') ? `<li><a href="#" id="nav-new-request">Nueva Solicitud</a></li>` : ''}
-        <li><a href="#" id="nav-my-requests">Mis Solicitudes</a></li>
-        ${hasRole('AdministradorCPM') ? `<li><a href="#" id="nav-admin-dashboard">Panel Admin</a></li>` : ''}
-        ${hasRole('ColaboradorCPM') ? `<li><a href="#" id="nav-collab-dashboard">Mis Asignaciones</a></li>` : ''}
-        <li><a href="#" id="nav-logout">Cerrar Sesión</a></li>
-    `;
+    if (headerNavLinks) {
+        headerNavLinks.innerHTML = `
+            <li><span>Hola, ${userName}</span></li>
+            ${hasRole('Solicitante') ? `<li><a href="#" id="nav-new-request">Nueva Solicitud</a></li>` : ''}
+            <li><a href="#" id="nav-my-requests">Mis Solicitudes</a></li>
+            ${hasRole('AdministradorCPM') ? `<li><a href="#" id="nav-admin-dashboard">Panel Admin</a></li>` : ''}
+            ${hasRole('ColaboradorCPM') ? `<li><a href="#" id="nav-collab-dashboard">Mis Asignaciones</a></li>` : ''}
+            <li><a href="#" id="nav-logout">Cerrar Sesión</a></li>
+        `;
 
-    // Event listeners para la navegación
-    if (hasRole('Solicitante')) {
-        document.getElementById('nav-new-request')?.addEventListener('click', (e) => { e.preventDefault(); renderNewRequestForm(); });
+        // Event listeners para la navegación (asegúrate de que las funciones existan)
+        if (hasRole('Solicitante')) {
+            document.getElementById('nav-new-request')?.addEventListener('click', (e) => { e.preventDefault(); renderNewRequestForm(); });
+        }
+        document.getElementById('nav-my-requests')?.addEventListener('click', (e) => { e.preventDefault(); renderMyRequests(); });
+        if (hasRole('AdministradorCPM')) {
+            document.getElementById('nav-admin-dashboard')?.addEventListener('click', (e) => { e.preventDefault(); renderAdminDashboard(); });
+        }
+        if (hasRole('ColaboradorCPM')) {
+            document.getElementById('nav-collab-dashboard')?.addEventListener('click', (e) => { e.preventDefault(); renderCollabDashboard(); });
+        }
+        document.getElementById('nav-logout').addEventListener('click', (e) => { e.preventDefault(); handleLogout(); });
     }
-    document.getElementById('nav-my-requests')?.addEventListener('click', (e) => { e.preventDefault(); renderMyRequests(); });
-    if (hasRole('AdministradorCPM')) {
-        document.getElementById('nav-admin-dashboard')?.addEventListener('click', (e) => { e.preventDefault(); renderAdminDashboard(); });
-    }
-    if (hasRole('ColaboradorCPM')) {
-        document.getElementById('nav-collab-dashboard')?.addEventListener('click', (e) => { e.preventDefault(); renderCollabDashboard(); });
-    }
-    document.getElementById('nav-logout').addEventListener('click', (e) => { e.preventDefault(); handleLogout(); });
 
     // Redirigir a la vista por defecto al iniciar sesión
     if (hasRole('AdministradorCPM')) {
@@ -162,396 +275,16 @@ function renderApp() {
     }
 }
 
-function showLoginForm() {
-    document.getElementById('login-form-container').style.display = 'block';
-    document.getElementById('register-form-container').style.display = 'none';
-}
-
-function showRegisterForm() {
-    document.getElementById('login-form-container').style.display = 'none';
-    document.getElementById('register-form-container').style.display = 'block';
-}
 
 // --- REQUESTS RENDERING ---
 
-async function renderMyRequests() {
-    appContent.innerHTML = `
-        <section class="dashboard-section">
-            <h2>Mis Solicitudes</h2>
-            <ul id="solicitudes-list"></ul>
-        </section>
-    `;
-    const solicitudesList = document.getElementById('solicitudes-list');
+// Tus funciones renderMyRequests, renderNewRequestForm, handleNewRequestSubmit,
+// renderAdminDashboard, renderCollabDashboard, renderSolicitudDetail,
+// renderSolicitudActions, renderComments, openAssignModal, openRateModal,
+// handleAssign, handleUpdateStatus, handleApproveReject, handleAddComment,
+// handleReopen, handleRate van aquí, SIN CAMBIOS.
 
-    try {
-        const solicitudes = await fetchData(`${API_BASE_URL}/Solicitudes`);
-        if (solicitudes.length === 0) {
-            solicitudesList.innerHTML = `<p>No tienes solicitudes aún. ¡Crea una nueva!</p>`;
-            return;
-        }
-        solicitudes.forEach(solicitud => {
-            const li = document.createElement('li');
-            li.innerHTML = `
-                <div>
-                    <h4>${solicitud.numeroSolicitud} - ${solicitud.titulo}</h4>
-                    <p>Formato: ${solicitud.formatoRequerido}</p>
-                    <p>Fecha Solicitud: ${new Date(solicitud.fechaSolicitud).toLocaleDateString()}</p>
-                </div>
-                <span class="status <span class="math-inline">\{solicitud\.estado\.replace\(/\\s/g, ''\)\}"\></span>{solicitud.estado}</span>
-                <button class="view-details-btn" data-id="${solicitud.id}">Ver Detalles</button>
-            `;
-            solicitudesList.appendChild(li);
-        });
-
-        document.querySelectorAll('.view-details-btn').forEach(button => {
-            button.addEventListener('click', (e) => renderSolicitudDetail(e.target.dataset.id));
-        });
-
-    } catch (error) {
-        solicitudesList.innerHTML = `<p>Error al cargar solicitudes: ${error.message}</p>`;
-    }
-}
-
-async function renderNewRequestForm() {
-    appContent.innerHTML = `
-        <section class="new-request-form-container">
-            <h3>Crear Nueva Solicitud</h3>
-            <form id="new-request-form">
-                <label for="new-request-title">Título/Asunto:</label>
-                <input type="text" id="new-request-title" required>
-
-                <label for="new-request-description">Descripción Detallada:</label>
-                <textarea id="new-request-description" rows="5"></textarea>
-
-                <label for="new-request-format">Formato Requerido:</label>
-                <select id="new-request-format" required>
-                    <option value="">Seleccione un formato</option>
-                    <option value="Video">Video</option>
-                    <option value="Fotografia">Fotografía</option>
-                    <option value="Transmision">Transmisión</option>
-                    <option value="Cursos Virtuales">Cursos Virtuales</option>
-                    <option value="Animacion">Animación</option>
-                    <option value="Diseno Grafico">Diseño Gráfico</option>
-                </select>
-
-                <label for="new-request-fecha-evento">Fecha del Evento (si aplica):</label>
-                <input type="date" id="new-request-fecha-evento">
-
-                <label for="new-request-hora-evento">Hora del Evento (si aplica):</label>
-                <input type="time" id="new-request-hora-evento">
-
-                <label for="new-request-lugar-evento">Lugar del Evento (si aplica):</label>
-                <input type="text" id="new-request-lugar-evento">
-
-                <label for="new-request-facultad-origen">Facultad o Dependencia de Origen:</label>
-                <input type="text" id="new-request-facultad-origen" value="${localStorage.getItem('userFacultadDependencia') || ''}" required>
-
-
-                <button type="submit">Enviar Solicitud</button>
-            </form>
-        </section>
-    `;
-    document.getElementById('new-request-form').addEventListener('submit', handleNewRequestSubmit);
-}
-
-async function handleNewRequestSubmit(event) {
-    event.preventDefault();
-    const requestData = {
-        titulo: document.getElementById('new-request-title').value,
-        descripcion: document.getElementById('new-request-description').value,
-        formatoRequerido: document.getElementById('new-request-format').value,
-        fechaEvento: document.getElementById('new-request-fecha-evento').value || null,
-        horaEvento: document.getElementById('new-request-hora-evento').value || null,
-        lugarEvento: document.getElementById('new-request-lugar-evento').value,
-        facultadOrigen: document.getElementById('new-request-facultad-origen').value
-    };
-
-    try {
-        await fetchData(`${API_BASE_URL}/Solicitudes`, 'POST', requestData);
-        alert('¡Solicitud creada exitosamente!');
-        renderMyRequests(); // Vuelve a la lista de solicitudes
-    } catch (error) {
-        // Error ya manejado por fetchData
-    }
-}
-
-async function renderAdminDashboard() {
-    appContent.innerHTML = `
-        <section class="dashboard-section">
-            <h2>Panel de Administrador CPM</h2>
-            <ul id="admin-solicitudes-list"></ul>
-            <h3>Gestión de Colaboradores (simple)</h3>
-            <div id="colaboradores-list"></div>
-        </section>
-    `;
-    const solicitudesList = document.getElementById('admin-solicitudes-list');
-    const colaboradoresDiv = document.getElementById('colaboradores-list');
-
-    try {
-        const solicitudes = await fetchData(`${API_BASE_URL}/Solicitudes`);
-        if (solicitudes.length === 0) {
-            solicitudesList.innerHTML = `<p>No hay solicitudes.</p>`;
-        } else {
-            solicitudes.forEach(solicitud => {
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    <div>
-                        <h4>${solicitud.numeroSolicitud} - ${solicitud.titulo}</h4>
-                        <p>Solicitante: <span class="math-inline">\{solicitud\.solicitanteNombre\} \(</span>{solicitud.facultadOrigen})</p>
-                        <p>Asignado a: ${solicitud.colaboradorAsignadoNombre || 'Nadie'}</p>
-                    </div>
-                    <span class="status <span class="math-inline">\{solicitud\.estado\.replace\(/\\s/g, ''\)\}"\></span>{solicitud.estado}</span>
-                    <button class="view-details-btn" data-id="${solicitud.id}">Ver Detalles</button>
-                `;
-                solicitudesList.appendChild(li);
-            });
-            document.querySelectorAll('.view-details-btn').forEach(button => {
-                button.addEventListener('click', (e) => renderSolicitudDetail(e.target.dataset.id));
-            });
-        }
-
-        // Para la gestión de colaboradores, simplemente listarlos por ahora
-        const colaboradores = await fetchData(`${API_BASE_URL}/Solicitudes/colaboradores`);
-        if (colaboradores.length > 0) {
-            colaboradoresDiv.innerHTML = '<h4>Colaboradores Actuales:</h4><ul>' +
-                colaboradores.map(c => `<li><span class="math-inline">\{c\.nombreCompleto\} \(</span>{c.email})</li>`).join('') +
-                '</ul>';
-        } else {
-            colaboradoresDiv.innerHTML = '<p>No hay colaboradores registrados. Asegúrate de crear usuarios con rol "ColaboradorCPM".</p>';
-        }
-
-    } catch (error) {
-        solicitudesList.innerHTML = `<p>Error al cargar el panel de administrador: ${error.message}</p>`;
-    }
-}
-
-async function renderCollabDashboard() {
-    appContent.innerHTML = `
-        <section class="dashboard-section">
-            <h2>Mis Asignaciones (Colaborador CPM)</h2>
-            <ul id="collab-solicitudes-list"></ul>
-        </section>
-    `;
-    const solicitudesList = document.getElementById('collab-solicitudes-list');
-
-    try {
-        const solicitudes = await fetchData(`${API_BASE_URL}/Solicitudes`); // Esta API ya filtra por rol
-        if (solicitudes.length === 0) {
-            solicitudesList.innerHTML = `<p>No tienes solicitudes asignadas.</p>`;
-            return;
-        }
-        solicitudes.forEach(solicitud => {
-            const li = document.createElement('li');
-            li.innerHTML = `
-                <div>
-                    <h4>${solicitud.numeroSolicitud} - ${solicitud.titulo}</h4>
-                    <p>Solicitante: ${solicitud.solicitanteNombre}</p>
-                    <p>Formato: ${solicitud.formatoRequerido}</p>
-                </div>
-                <span class="status <span class="math-inline">\{solicitud\.estado\.replace\(/\\s/g, ''\)\}"\></span>{solicitud.estado}</span>
-                <button class="view-details-btn" data-id="${solicitud.id}">Ver Detalles</button>
-            `;
-            solicitudesList.appendChild(li);
-        });
-
-        document.querySelectorAll('.view-details-btn').forEach(button => {
-            button.addEventListener('click', (e) => renderSolicitudDetail(e.target.dataset.id));
-        });
-
-    } catch (error) {
-        solicitudesList.innerHTML = `<p>Error al cargar asignaciones: ${error.message}</p>`;
-    }
-}
-
-
-async function renderSolicitudDetail(id) {
-    appContent.innerHTML = `
-        <section class="solicitud-detail">
-            <button onclick="history.back()">Volver</button>
-            <h3 id="solicitud-detail-title">Cargando...</h3>
-            <p><strong>Número de Solicitud:</strong> <span id="detail-numero"></span></p>
-            <p><strong>Estado:</strong> <span id="detail-estado" class="status"></span></p>
-            <p><strong>Fecha Solicitud:</strong> <span id="detail-fecha-solicitud"></span></p>
-            <p><strong>Solicitante:</strong> <span id="detail-solicitante"></span> (<span id="detail-solicitante-email"></span>)</p>
-            <p><strong>Facultad/Dependencia:</strong> <span id="detail-facultad-origen"></span></p>
-            <p><strong>Formato Requerido:</strong> <span id="detail-formato"></span></p>
-            <p><strong>Descripción:</strong> <span id="detail-descripcion"></span></p>
-            <p><strong>Fecha del Evento:</strong> <span id="detail-fecha-evento"></span></p>
-            <p><strong>Hora del Evento:</strong> <span id="detail-hora-evento"></span></p>
-            <p><strong>Lugar del Evento:</strong> <span id="detail-lugar-evento"></span></p>
-            <p><strong>Asignado a:</strong> <span id="detail-colaborador-asignado"></span></p>
-            <p><strong>Calificación:</strong> <span id="detail-calificacion"></span></p>
-            <p><strong>Comentarios Calificación:</strong> <span id="detail-comentarios-calificacion"></span></p>
-
-            <div class="actions" id="solicitud-actions">
-                </div>
-
-            <div class="comments-section">
-                <h4>Comentarios</h4>
-                <div id="comments-list"></div>
-                <form id="add-comment-form">
-                    <textarea id="comment-content" rows="3" placeholder="Añadir un comentario..."></textarea>
-                    <button type="submit" class="btn-comment">Añadir Comentario</button>
-                </form>
-            </div>
-
-            <div id="assign-modal" class="modal">
-                <div class="modal-content">
-                    <span class="close-button">&times;</span>
-                    <h4>Asignar Solicitud</h4>
-                    <select id="assign-colaborador-select">
-                        <option value="">Selecciona un colaborador</option>
-                    </select>
-                    <button id="confirm-assign-btn">Asignar</button>
-                </div>
-            </div>
-
-             <div id="rate-modal" class="modal">
-                <div class="modal-content">
-                    <span class="close-button">&times;</span>
-                    <h4>Calificar Servicio</h4>
-                    <label for="rating-select">Calificación (1-5):</label>
-                    <select id="rating-select">
-                        <option value="1">1 Estrella</option>
-                        <option value="2">2 Estrellas</option>
-                        <option value="3">3 Estrellas</option>
-                        <option value="4">4 Estrellas</option>
-                        <option value="5">5 Estrellas</option>
-                    </select>
-                    <label for="rating-comments">Comentarios:</label>
-                    <textarea id="rating-comments" rows="3"></textarea>
-                    <button id="confirm-rate-btn">Enviar Calificación</button>
-                </div>
-            </div>
-
-        </section>
-    `;
-
-    try {
-        const solicitud = await fetchData(`<span class="math-inline">\{API\_BASE\_URL\}/Solicitudes/</span>{id}`);
-        document.getElementById('solicitud-detail-title').textContent = solicitud.titulo;
-        document.getElementById('detail-numero').textContent = solicitud.numeroSolicitud;
-        const estadoSpan = document.getElementById('detail-estado');
-        estadoSpan.textContent = solicitud.estado;
-        estadoSpan.className = `status ${solicitud.estado.replace(/\s/g, '')}`;
-        document.getElementById('detail-fecha-solicitud').textContent = new Date(solicitud.fechaSolicitud).toLocaleDateString();
-        document.getElementById('detail-solicitante').textContent = solicitud.solicitanteNombre;
-        document.getElementById('detail-solicitante-email').textContent = solicitud.solicitanteEmail;
-        document.getElementById('detail-facultad-origen').textContent = solicitud.facultadOrigen;
-        document.getElementById('detail-formato').textContent = solicitud.formatoRequerido;
-        document.getElementById('detail-descripcion').textContent = solicitud.descripcion;
-        document.getElementById('detail-fecha-evento').textContent = solicitud.fechaEvento ? new Date(solicitud.fechaEvento).toLocaleDateString() : 'N/A';
-        document.getElementById('detail-hora-evento').textContent = solicitud.horaEvento || 'N/A';
-        document.getElementById('detail-lugar-evento').textContent = solicitud.lugarEvento || 'N/A';
-        document.getElementById('detail-colaborador-asignado').textContent = solicitud.colaboradorAsignadoNombre || 'No asignado';
-        document.getElementById('detail-calificacion').textContent = solicitud.calificacionServicio ? `${solicitud.calificacionServicio} estrellas` : 'N/A';
-        document.getElementById('detail-comentarios-calificacion').textContent = solicitud.comentariosCalificacion || 'Sin comentarios';
-
-
-        renderSolicitudActions(solicitud);
-        renderComments(solicitud.comentarios);
-
-        document.getElementById('add-comment-form').addEventListener('submit', (e) => handleAddComment(e, solicitud.id));
-
-    } catch (error) {
-        appContent.innerHTML = `<p>Error al cargar los detalles de la solicitud: ${error.message}</p>`;
-    }
-}
-
-function renderSolicitudActions(solicitud) {
-    const actionsDiv = document.getElementById('solicitud-actions');
-    actionsDiv.innerHTML = ''; // Limpiar acciones previas
-
-    const currentUserRoles = getUserRoles();
-    const currentUserId = getUserId();
-
-    // Acciones para Administrador CPM
-    if (currentUserRoles.includes('AdministradorCPM')) {
-        if (solicitud.estado === 'Recibido' || solicitud.estado === 'Pendiente' || solicitud.estado === 'Reabierta') {
-            const assignBtn = document.createElement('button');
-            assignBtn.textContent = 'Asignar Colaborador';
-            assignBtn.className = 'btn-assign';
-            assignBtn.addEventListener('click', () => openAssignModal(solicitud.id));
-            actionsDiv.appendChild(assignBtn);
-        }
-        if (solicitud.estado === 'Resuelto' || solicitud.estado === 'Devuelta para correcciones') {
-            const approveBtn = document.createElement('button');
-            approveBtn.textContent = 'Aprobar Solicitud';
-            approveBtn.className = 'btn-approve';
-            approveBtn.addEventListener('click', () => handleApproveReject(solicitud.id, 'approve'));
-            actionsDiv.appendChild(approveBtn);
-
-            const rejectBtn = document.createElement('button');
-            rejectBtn.textContent = 'Rechazar Solicitud';
-            rejectBtn.className = 'btn-reject';
-            rejectBtn.addEventListener('click', () => handleApproveReject(solicitud.id, 'reject'));
-            actionsDiv.appendChild(rejectBtn);
-
-            const returnForCorrectionBtn = document.createElement('button');
-            returnForCorrectionBtn.textContent = 'Devolver para Correcciones';
-            returnForCorrectionBtn.className = 'btn-reject'; // Puedes usar otro color si quieres
-            returnForCorrectionBtn.addEventListener('click', () => handleUpdateStatus(solicitud.id, 'Devuelta para correcciones'));
-            actionsDiv.appendChild(returnForCorrectionBtn);
-        }
-    }
-
-    // Acciones para Colaborador CPM
-    if (currentUserRoles.includes('ColaboradorCPM') && solicitud.colaboradorAsignadoId === currentUserId) {
-        if (solicitud.estado === 'Asignada' || solicitud.estado === 'Devuelta para correcciones') {
-            const processBtn = document.createElement('button');
-            processBtn.textContent = 'Marcar En Proceso';
-            processBtn.className = 'btn-process';
-            processBtn.addEventListener('click', () => handleUpdateStatus(solicitud.id, 'En proceso'));
-            actionsDiv.appendChild(processBtn);
-        }
-        if (solicitud.estado === 'En proceso') {
-            const resolveBtn = document.createElement('button');
-            resolveBtn.textContent = 'Marcar Resuelta';
-            resolveBtn.className = 'btn-resolve';
-            resolveBtn.addEventListener('click', () => handleUpdateStatus(solicitud.id, 'Resuelto'));
-            actionsDiv.appendChild(resolveBtn);
-        }
-    }
-
-    // Acciones para Solicitante
-    if (currentUserRoles.includes('Solicitante') && solicitud.solicitanteId === currentUserId) {
-        if (solicitud.estado === 'Resuelto' || solicitud.estado === 'Aprobada' || solicitud.estado === 'Rechazada') {
-            const reopenBtn = document.createElement('button');
-            reopenBtn.textContent = 'Reabrir Solicitud';
-            reopenBtn.className = 'btn-reopen';
-            reopenBtn.addEventListener('click', () => handleReopen(solicitud.id));
-            actionsDiv.appendChild(reopenBtn);
-
-            if (!solicitud.calificacionServicio) { // Si aún no ha calificado
-                const rateBtn = document.createElement('button');
-                rateBtn.textContent = 'Calificar Servicio';
-                rateBtn.className = 'btn-rate';
-                rateBtn.addEventListener('click', () => openRateModal(solicitud.id));
-                actionsDiv.appendChild(rateBtn);
-            }
-        }
-    }
-}
-
-function renderComments(comments) {
-    const commentsListDiv = document.getElementById('comments-list');
-    commentsListDiv.innerHTML = '';
-    if (comments && comments.length > 0) {
-        comments.forEach(comment => {
-            const div = document.createElement('div');
-            div.className = 'comment-item';
-            div.innerHTML = `
-                <p><strong>${comment.usuarioNombre}:</strong> <span class="math-inline">\{comment\.contenido\}</p\>
-<small>{new Date(comment.fechaCreacion).toLocaleString()}</small>
-`;
-commentsListDiv.appendChild(div);
-});
-} else {
-commentsListDiv.innerHTML = '<p>No hay comentarios aún.</p>';
-}
-}
-
-// --- MODAL FUNCTIONS ---
+// --- MODAL FUNCTIONS (Mantener aquí) ---
 async function openAssignModal(solicitudId) {
     const modal = document.getElementById('assign-modal');
     const select = document.getElementById('assign-colaborador-select');
@@ -562,7 +295,7 @@ async function openAssignModal(solicitudId) {
         colaboradores.forEach(colaborador => {
             const option = document.createElement('option');
             option.value = colaborador.id;
-            option.textContent = `<span class="math-inline">\{colaborador\.nombreCompleto\}</69\> \(</span>{colaborador.email})`;
+            option.textContent = `${colaborador.nombreCompleto} (${colaborador.email})`;
             select.appendChild(option);
         });
     } catch (error) {
@@ -583,14 +316,14 @@ async function openRateModal(solicitudId) {
 }
 
 
-// --- HANDLERS FOR ACTIONS ---
+// --- HANDLERS FOR ACTIONS (Mantener aquí) ---
 async function handleAssign(solicitudId, colaboradorId) {
     if (!colaboradorId) {
         alert('Por favor, selecciona un colaborador.');
         return;
     }
     try {
-        await fetchData(`<span class="math-inline">\{API\_BASE\_URL\}/Solicitudes/assign/</span>{solicitudId}`, 'PUT', colaboradorId);
+        await fetchData(`${API_BASE_URL}/Solicitudes/assign/${solicitudId}`, 'PUT', { colaboradorId: colaboradorId }); // Envía como objeto
         alert('Solicitud asignada exitosamente!');
         document.getElementById('assign-modal').style.display = 'none';
         renderSolicitudDetail(solicitudId); // Recargar detalles
@@ -603,7 +336,7 @@ async function handleUpdateStatus(solicitudId, newStatus) {
     const confirmUpdate = confirm(`¿Estás seguro de cambiar el estado a "${newStatus}"?`);
     if (!confirmUpdate) return;
     try {
-        await fetchData(`<span class="math-inline">\{API\_BASE\_URL\}/Solicitudes/update\-status/</span>{solicitudId}`, 'PUT', newStatus);
+        await fetchData(`${API_BASE_URL}/Solicitudes/update-status/${solicitudId}`, 'PUT', { estado: newStatus }); // Envía como objeto
         alert(`Estado de solicitud actualizado a "${newStatus}"!`);
         renderSolicitudDetail(solicitudId);
     } catch (error) {
@@ -615,7 +348,7 @@ async function handleApproveReject(solicitudId, action) {
     const comments = prompt(`Introduce comentarios para la ${action}ación:`);
     if (comments === null) return; // Si el usuario cancela
     try {
-        await fetchData(`<span class="math-inline">\{API\_BASE\_URL\}/Solicitudes/</span>{action}/${solicitudId}`, 'PUT', comments);
+        await fetchData(`${API_BASE_URL}/Solicitudes/${action}/${solicitudId}`, 'PUT', { comentarios: comments }); // Envía como objeto
         alert(`Solicitud ${action === 'approve' ? 'aprobada' : 'rechazada'}!`);
         renderSolicitudDetail(solicitudId);
     } catch (error) {
@@ -631,7 +364,7 @@ async function handleAddComment(event, solicitudId) {
         return;
     }
     try {
-        await fetchData(`<span class="math-inline">\{API\_BASE\_URL\}/Solicitudes/comment/</span>{solicitudId}`, 'POST', commentContent);
+        await fetchData(`${API_BASE_URL}/Solicitudes/comment/${solicitudId}`, 'POST', { contenido: commentContent }); // Envía como objeto
         document.getElementById('comment-content').value = ''; // Limpiar textarea
         alert('Comentario añadido!');
         renderSolicitudDetail(solicitudId); // Recargar para mostrar el nuevo comentario
@@ -647,7 +380,7 @@ async function handleReopen(solicitudId) {
         return;
     }
     try {
-        await fetchData(`<span class="math-inline">\{API\_BASE\_URL\}/Solicitudes/reopen/</span>{solicitudId}`, 'PUT', reopenComment);
+        await fetchData(`${API_BASE_URL}/Solicitudes/reopen/${solicitudId}`, 'PUT', { motivoReapertura: reopenComment }); // Envía como objeto
         alert('Solicitud reabierta exitosamente!');
         renderSolicitudDetail(solicitudId);
     } catch (error) {
@@ -665,7 +398,7 @@ async function handleRate(solicitudId) {
     }
 
     try {
-        await fetchData(`<span class="math-inline">\{API\_BASE\_URL\}/Solicitudes/rate/</span>{solicitudId}`, 'PUT', {
+        await fetchData(`${API_BASE_URL}/Solicitudes/rate/${solicitudId}`, 'PUT', {
             calificacionServicio: rating,
             comentariosCalificacion: comments
         });
@@ -676,7 +409,6 @@ async function handleRate(solicitudId) {
         // Error ya manejado por fetchData
     }
 }
-
 
 // Initial render when the page loads
 document.addEventListener('DOMContentLoaded', renderApp);

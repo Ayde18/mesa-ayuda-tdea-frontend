@@ -3,13 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mesa de Ayuda - TdeA</title> <link rel="stylesheet" href="style.css">
+    <title>Mesa de Ayuda - TdeA</title> 
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <header class="main-header">
         <div class="container header-content">
-            <img src="../src/assets/logo_tdea.png" alt="Logo Tecnológico de Antioquia" class="logo-tdea-header"> <nav>
+            <img src="../src/assets/logo_tdea.png" alt="Logo Tecnológico de Antioquia" class="logo-tdea-header">
+            
+            <nav>
                 <ul id="header-nav-links">
                     <li><a href="#" id="login-header-link">Iniciar sesión</a></li>
                     <li><a href="#" id="register-header-link">Registro de usuarios</a></li>
@@ -24,10 +27,10 @@
             
             <section id="auth-section" class="auth-forms">
                 <div id="login-form-container">
-                    <h3>Iniciar Sesión con Credenciales TdeA</h3> <button type="button" id="cas-login-button" class="btn-primary">
+                    <h3>Iniciar Sesión con Credenciales TdeA</h3>
+                    <button type="button" id="cas-login-button" class="btn-primary">
                         Ingresar con usuario TdeA
                     </button>
-                    
                     <p>¿No tienes cuenta? <a href="#" id="show-register-link">Regístrate aquí</a></p>
                 </div>
 
@@ -36,19 +39,14 @@
                     <form id="register-form">
                         <label for="register-nombrecompleto">Nombre Completo:</label>
                         <input type="text" id="register-nombrecompleto" required>
-
                         <label for="register-identificacion">Número de Identificación:</label>
                         <input type="text" id="register-identificacion" required>
-
                         <label for="register-email">Correo Electrónico:</label>
                         <input type="email" id="register-email" required>
-
                         <label for="register-password">Contraseña:</label>
                         <input type="password" id="register-password" required>
-
                         <label for="register-celular">Número de Celular:</label>
                         <input type="text" id="register-celular">
-
                         <label for="register-roltdea">Rol en TdeA:</label>
                         <select id="register-roltdea" required>
                             <option value="">Seleccione un rol</option> 
@@ -60,7 +58,6 @@
                             <option value="Asesor">Asesor</option>
                             <option value="Otro">Otro</option>
                         </select>
-
                         <label for="register-sede">Sede:</label>
                         <select id="register-sede" required>
                             <option value="">Seleccione una sede</option> 
@@ -70,7 +67,6 @@
                             <option value="Regiones">Regiones</option>
                             <option value="Otro">Otro</option>
                         </select>
-
                         <label for="register-facultad">Facultad/Dependencia:</label>
                         <input type="text" id="register-facultad" required> 
                         <button type="submit" class="btn-primary">Registrarse</button>
@@ -93,7 +89,7 @@
                     <form id="assign-collab-form">
                         <label for="collab-select">Seleccionar Colaborador:</label>
                         <select id="collab-select" required>
-                            </select>
+                        </select>
                         <button type="submit">Asignar</button>
                     </form>
                 </div>
@@ -105,12 +101,13 @@
                     <form id="update-status-form">
                         <label for="status-select">Seleccionar Estado:</label>
                         <select id="status-select" required>
-                            </select>
+                        </select>
                         <button type="submit">Actualizar</button>
                     </form>
                 </div>
             </div>
-            </section>
+
+        </section>
     </main>
 
     <footer class="main-footer">
@@ -121,54 +118,64 @@
 
     <script src="../src/App.js"></script>
     <script>
-        // Inicializa la aplicación al cargar la página
-        // Asegúrate de que 'renderApp', 'showLoginForm', 'isUserLoggedIn', 'handleLogout'
-        // están definidos y accesibles globalmente en tu App.js si los usas aquí.
-        document.addEventListener('DOMContentLoaded', renderApp);
+        // Nota: Estos listeners deberían estar en App.js para una mejor modularidad.
+        // Los dejo aquí para asegurar que los enlaces de header y registro/login funcionen
+        // incluso si App.js no los está manejando explícitamente aún.
+        document.addEventListener('DOMContentLoaded', () => {
+            // Asegúrate de que tu App.js defina estas funciones o maneje estos eventos
+            const showRegisterLink = document.getElementById('show-register-link');
+            if (showRegisterLink) {
+                showRegisterLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.getElementById('login-form-container').style.display = 'none';
+                    document.getElementById('register-form-container').style.display = 'block';
+                });
+            }
 
-        // Controladores de eventos para mostrar/ocultar formularios de login/registro
-        // Estos deben estar en App.js idealmente, pero se pueden dejar aquí si App.js los expone.
-        document.getElementById('show-register-link')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            document.getElementById('login-form-container').style.display = 'none';
-            document.getElementById('register-form-container').style.display = 'block';
-        });
+            const showLoginLink = document.getElementById('show-login-link');
+            if (showLoginLink) {
+                showLoginLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.getElementById('register-form-container').style.display = 'none';
+                    document.getElementById('login-form-container').style.display = 'block';
+                });
+            }
 
-        document.getElementById('show-login-link')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            document.getElementById('register-form-container').style.display = 'none';
-            document.getElementById('login-form-container').style.display = 'block';
-        });
+            const loginHeaderLink = document.getElementById('login-header-link');
+            if (loginHeaderLink) {
+                loginHeaderLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.getElementById('login-form-container').style.display = 'block';
+                    document.getElementById('register-form-container').style.display = 'none';
+                    document.getElementById('auth-section').scrollIntoView({ behavior: 'smooth' });
+                });
+            }
 
-        // Manejo de los enlaces del header (Iniciar sesión, Registro de usuarios)
-        document.getElementById('login-header-link')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (typeof showLoginForm === 'function') { // Asegúrate de que showLoginForm exista
-                showLoginForm();
-                document.getElementById('auth-section').scrollIntoView({ behavior: 'smooth' });
-            } else {
-                // Si showLoginForm no existe, simplemente muestra el contenedor de login
-                document.getElementById('login-form-container').style.display = 'block';
-                document.getElementById('register-form-container').style.display = 'none';
-                document.getElementById('auth-section').scrollIntoView({ behavior: 'smooth' });
+            const registerHeaderLink = document.getElementById('register-header-link');
+            if (registerHeaderLink) {
+                registerHeaderLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.getElementById('login-form-container').style.display = 'none';
+                    document.getElementById('register-form-container').style.display = 'block';
+                    document.getElementById('auth-section').scrollIntoView({ behavior: 'smooth' });
+                });
+            }
+
+            // Lógica para el botón "Ingresar con usuario TdeA" (que debe estar en App.js)
+            const casLoginButton = document.getElementById('cas-login-button');
+            if (casLoginButton) {
+                casLoginButton.addEventListener('click', () => {
+                    const casBaseUrl = 'https://campus.tdea.edu.co/cas/login';
+                    // IMPORTANTE: Ajusta esta URL a tu dominio REAL donde tu backend recibirá el ticket
+                    // Por ejemplo: 'https://mesa-ayuda-tdea-frontend.vercel.app/api/cas_callback'
+                    // Necesitarás un backend en esa ruta para validar el ticket.
+                    const serviceUrl = encodeURIComponent('https://mesa-ayuda-tdea-frontend.vercel.app/auth/cas/callback'); 
+                    
+                    const redirectToCasUrl = `${casBaseUrl}?service=${serviceUrl}`;
+                    window.location.href = redirectToCasUrl;
+                });
             }
         });
-
-        document.getElementById('register-header-link')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (typeof showRegisterForm === 'function') { // Asegúrate de que showRegisterForm exista
-                showRegisterForm();
-                document.getElementById('auth-section').scrollIntoView({ behavior: 'smooth' });
-            } else {
-                 // Si showRegisterForm no existe, simplemente muestra el contenedor de registro
-                document.getElementById('login-form-container').style.display = 'none';
-                document.getElementById('register-form-container').style.display = 'block';
-                document.getElementById('auth-section').scrollIntoView({ behavior: 'smooth' });
-            }
-        });
-
-        // Asegúrate de que tu App.js maneje la lógica de inicio de sesión y registro
-        // así como el enrutamiento de las diferentes vistas.
     </script>
 </body>
 </html>
