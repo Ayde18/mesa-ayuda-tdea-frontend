@@ -1,61 +1,68 @@
-/* style.css */
+/* style.css - Colores y estilos basados en la página de login del TdeA */
 
-/* Variables de color (para facilitar cambios futuros) */
+/* Variables de color */
 :root {
-    --tdea-green-dark: #2F6C4C; /* Estimado del verde oscuro del logo y botones principales */
-    --tdea-green-light: #4A9C6F; /* Un verde un poco más claro para hover o acentos */
-    --tdea-light-blue-gray: #F0F4F7; /* Fondo de filtros, campos, etc. */
-    --tdea-soft-orange: #F9E79F; /* Naranja/Amarillo de los botones de carrusel */
-    --tdea-text-dark: #333; /* Texto principal oscuro */
-    --tdea-text-light: #fff; /* Texto en fondos oscuros */
-    --tdea-border-color: #ddd; /* Color de borde general para inputs, etc. */
-    --tdea-shadow-light: rgba(0, 0, 0, 0.05);
-    --tdea-shadow-medium: rgba(0, 0, 0, 0.1);
+    --tdea-green-dark: #2F6C4C; /* Verde oscuro principal del logo TdeA */
+    --tdea-green-light: #4A9C6F; /* Un verde un poco más claro, para hover o acentos */
+    --tdea-light-gray-bg: #F5F5F5; /* Fondo general de la página (gris muy claro, casi blanco) */
+    --tdea-white: #FFFFFF; /* Fondo de contenedores principales y campos */
+    --tdea-border-color: #D3D3D3; /* Gris para bordes de inputs y líneas sutiles */
+    --tdea-button-gray: #E0E0E0; /* Gris del botón "Ingresar" */
+    --tdea-button-gray-hover: #D0D0D0; /* Gris más oscuro para el hover del botón */
+    --tdea-text-dark: #333333; /* Color de texto general */
+    --tdea-text-light: #ffffff; /* Color de texto sobre fondos oscuros */
+    --tdea-link-color: #2F6C4C; /* Color para enlaces (verde TdeA) */
+    --tdea-shadow-light: rgba(0, 0, 0, 0.05); /* Sombra sutil */
+    --tdea-shadow-medium: rgba(0, 0, 0, 0.1); /* Sombra un poco más visible */
+    --tdea-font-family: Arial, sans-serif; /* Más parecido al de la imagen */
 }
 
-/* Estilos Generales */
+/* Estilos Generales del Body */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Fuente más moderna */
+    font-family: var(--tdea-font-family); /* Fuente limpia y moderna */
     margin: 0;
     padding: 0;
-    background-color: var(--tdea-light-blue-gray); /* Fondo general de la página */
+    background-color: var(--tdea-light-gray-bg); /* Fondo general gris muy claro */
     color: var(--tdea-text-dark);
     line-height: 1.6;
+    display: flex; /* Para centrar el contenido principal vertical y horizontalmente */
+    flex-direction: column;
+    min-height: 100vh; /* Ocupa toda la altura de la ventana */
+    overflow-y: auto; /* Permite scroll si el contenido es muy largo */
 }
 
 .container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 20px; /* Padding horizontal para el contenido */
+    padding: 0 20px;
 }
 
 /* Header */
-.main-header { /* Clase aplicada en index.html */
+.main-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 10px 20px;
-    background-color: var(--tdea-text-light); /* Fondo blanco */
-    box-shadow: 0 2px 4px var(--tdea-shadow-medium);
-    border-bottom: 1px solid var(--tdea-border-color);
+    background-color: var(--tdea-white); /* Fondo blanco del header */
+    box-shadow: 0 2px 4px var(--tdea-shadow-light); /* Sombra muy sutil */
+    border-bottom: 1px solid var(--tdea-border-color); /* Línea inferior sutil */
+    height: 70px; /* Altura fija para el header */
+    box-sizing: border-box; /* Incluye padding y border en la altura */
 }
 
 .header-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 100%; /* Para que ocupe todo el ancho del container */
+    width: 100%;
 }
 
-.logo-tdea {
-    height: 50px; /* Ajusta según el tamaño de tu logo */
-    margin-right: 20px;
+.logo-tdea-header { /* Nueva clase para el logo del header */
+    height: 50px; /* Ajusta el tamaño del logo para que sea prominente como en la imagen de referencia */
 }
 
-.main-header h1 {
-    color: var(--tdea-green-dark);
-    margin: 0;
-    font-size: 1.8em;
+.main-header h1 { /* Este título no está visible en la imagen de referencia, lo ocultamos o eliminamos */
+    display: none; 
 }
 
 .main-header nav ul {
@@ -64,119 +71,82 @@ body {
     padding: 0;
     display: flex;
     align-items: center;
-}
-
-.main-header nav ul li {
-    margin-left: 20px;
-}
-
-.main-header nav ul li span { /* Estilo para "Hola, Usuario" */
-    color: var(--tdea-text-dark);
-    font-weight: normal;
+    gap: 15px; /* Espacio entre los elementos de navegación */
 }
 
 .main-header nav ul li a {
     text-decoration: none;
-    color: var(--tdea-text-dark);
-    font-weight: bold;
+    color: var(--tdea-text-dark); /* Color de texto normal para los enlaces de navegación */
+    font-size: 0.9em; /* Tamaño de fuente más pequeño para los enlaces del header */
+    font-weight: normal; 
     padding: 5px 0;
     transition: color 0.3s ease;
 }
 
 .main-header nav ul li a:hover {
-    color: var(--tdea-green-dark);
+    color: var(--tdea-green-dark); /* Verde al pasar el ratón */
 }
-
-/* Botones genéricos */
-button, .btn-primary {
-    cursor: pointer;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    font-weight: bold;
-    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
-    background-color: var(--tdea-green-dark);
-    color: var(--tdea-text-light);
-}
-
-button:hover, .btn-primary:hover {
-    background-color: var(--tdea-green-light);
-    transform: translateY(-2px); /* Pequeño efecto al pasar el ratón */
-}
-
-/* Tipos de botones específicos */
-.btn-assign, .btn-approve, .btn-resolve, .btn-reopen, .btn-process {
-    background-color: var(--tdea-green-dark); /* Verde principal para acciones positivas */
-    margin-right: 10px; /* Espacio entre botones */
-}
-.btn-reject, .btn-return { /* Para rechazar o devolver para correcciones */
-    background-color: #e74c3c; /* Rojo para acciones negativas */
-    color: var(--tdea-text-light);
-    margin-right: 10px;
-}
-.btn-rate { /* Para calificar */
-    background-color: #f39c12; /* Naranja para calificación */
-    color: var(--tdea-text-light);
-}
-
 
 /* Layout Principal (para contenido debajo del header) */
 .main-layout {
+    flex-grow: 1; /* Ocupa todo el espacio disponible */
     display: flex;
-    padding-top: 20px; /* Espacio desde el header */
-    gap: 20px; /* Espacio entre la barra lateral (si la tuvieras) y el contenido principal */
+    flex-direction: column;
+    justify-content: center; /* Centra el contenido verticalmente */
+    align-items: center; /* Centra el contenido horizontalmente */
+    padding: 20px; /* Espacio desde los bordes de la ventana */
 }
 
 /* Contenido Principal (donde App.js renderiza las vistas) */
 .content-section {
-    flex-grow: 1; /* Ocupa el espacio restante */
-    background-color: var(--tdea-text-light); /* Fondo blanco */
-    padding: 30px;
+    background-color: var(--tdea-white); /* Fondo blanco para la sección de contenido */
+    padding: 40px 30px; /* Más padding para que los formularios se vean más grandes */
     border-radius: 8px;
-    box-shadow: 0 2px 8px var(--tdea-shadow-medium);
+    /* La imagen de referencia no tiene una sombra pronunciada en el contenedor principal */
+    /* box-shadow: 0 4px 10px var(--tdea-shadow-medium); */ 
+    max-width: 400px; /* Ancho máximo para el contenido, similar al formulario de login */
+    width: 100%; /* Asegura que ocupe el ancho disponible */
+    text-align: center; /* Centra el texto */
+    margin-top: -50px; /* Ajuste para subir el contenido un poco más, acercarlo al centro */
 }
 
-/* Estilos de las secciones iniciales */
-.welcome-title {
-    color: var(--tdea-green-dark);
-    text-align: center;
-    margin-bottom: 10px;
-}
-
-.welcome-message {
-    text-align: center;
-    color: var(--tdea-text-dark);
-    margin-bottom: 30px;
+/* Estilos de las secciones iniciales (se eliminaron los mensajes de bienvenida) */
+.welcome-title, .welcome-message {
+    display: none; /* Oculta estos elementos ya que no están en la imagen de referencia */
 }
 
 
 /* Sección de autenticación y formularios */
-.auth-forms { /* Clase aplicada en index.html */
-    max-width: 500px;
-    margin: 20px auto;
-    padding: 30px;
-    background-color: var(--tdea-light-blue-gray); /* Fondo gris/azul claro */
-    border-radius: 8px;
-    box-shadow: 0 2px 8px var(--tdea-shadow-medium);
+.auth-forms {
+    max-width: 300px; /* Un ancho más estrecho para los formularios, similar al de la imagen */
+    margin: 30px auto 0 auto; /* Espacio superior para el formulario */
+    padding: 0; 
+    background-color: transparent; 
+    box-shadow: none; 
 }
 
-.auth-forms h3 {
-    color: var(--tdea-green-dark);
-    text-align: center;
-    margin-bottom: 25px;
+.auth-forms h3 { /* El título "Iniciar Sesión" del formulario. Podemos ocultarlo o usarlo si App.js lo renderiza. */
+    display: none; /* No visible en la imagen de referencia */
 }
 
 .auth-forms form {
     display: flex;
     flex-direction: column;
-    gap: 15px; /* Espacio entre elementos del formulario */
+    gap: 15px; /* Espacio entre los campos de entrada */
+    align-items: center; /* Centra los elementos del formulario */
 }
 
-.auth-forms label {
-    font-weight: bold;
-    color: var(--tdea-text-dark);
-    margin-bottom: 5px;
+.auth-forms label.sr-only { /* Clases para ocultar visualmente los labels de accesibilidad */
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    border: 0;
 }
+
 
 .auth-forms input[type="email"],
 .auth-forms input[type="password"],
@@ -184,39 +154,65 @@ button:hover, .btn-primary:hover {
 .auth-forms select,
 .auth-forms textarea {
     padding: 12px;
-    border: 1px solid var(--tdea-border-color);
+    border: 1px solid var(--tdea-border-color); /* Borde gris sutil */
+    border-radius: 5px; /* Bordes ligeramente redondeados */
+    background-color: var(--tdea-white); /* Fondo blanco para campos de entrada */
+    width: 100%; /* Ocupa todo el ancho disponible del formulario */
+    max-width: 280px; /* Ancho fijo para los campos, similar a la imagen */
+    box-sizing: border-box;
+    font-size: 1.1em; /* Un poco más grande para el texto de entrada */
+}
+
+/* Botón "Ingresar" */
+button, .btn-primary {
+    cursor: pointer;
+    border: none;
+    padding: 10px 40px; /* Más padding para que el botón sea más ancho */
     border-radius: 5px;
-    background-color: var(--tdea-text-light); /* Blanco para campos de entrada */
-    width: calc(100% - 24px); /* Ajusta para padding */
-    box-sizing: border-box; /* Incluye padding en el ancho */
+    font-weight: normal; /* Texto normal, no negrita */
+    font-size: 1.1em; /* Tamaño de fuente para el botón */
+    transition: background-color 0.3s ease, color 0.3s ease;
+    background-color: var(--tdea-button-gray); /* Gris del botón "Ingresar" */
+    color: var(--tdea-text-dark); /* Texto oscuro para el botón */
+    margin-top: 25px; /* Espacio superior para el botón de Ingresar */
+    width: auto; /* Ancho automático para que no ocupen el 100% */
+    text-transform: capitalize; /* "Ingresar" con la primera letra mayúscula */
 }
 
-.auth-forms button[type="submit"] {
-    margin-top: 20px;
-    width: 100%;
+button:hover, .btn-primary:hover {
+    background-color: var(--tdea-button-gray-hover); /* Gris más oscuro al pasar el ratón */
 }
 
-.auth-forms p {
-    text-align: center;
-    margin-top: 20px;
+.auth-forms p { /* El texto "¿No tienes cuenta? Regístrate aquí" no está visible en la imagen de referencia */
+    display: none;
 }
 
-.auth-forms p a {
+/* Logo central en la sección de login */
+.centered-tdea-logo {
+    display: block; /* Para que ocupe su propia línea y se pueda centrar */
+    margin: 0 auto 20px auto; /* Centrar horizontalmente y dar espacio abajo */
+    height: 120px; /* Tamaño del logo central */
+    /* Si tu logo_tdea.png YA tiene el texto "TdeA" debajo del símbolo, no necesitas un h2 extra */
+}
+
+.tdea-title { /* Si tu logo_tdea.png NO tiene el texto "TdeA", puedes usar este título */
     color: var(--tdea-green-dark);
-    text-decoration: none;
+    font-size: 2.5em; /* Tamaño de fuente para el "TdeA" */
     font-weight: bold;
+    margin-top: -10px; /* Ajustar si es necesario */
+    margin-bottom: 30px;
+    display: none; /* Oculto por defecto si el logo ya incluye el texto */
 }
 
-.auth-forms p a:hover {
-    text-decoration: underline;
-}
 
+/* --- Estilos para las otras vistas (si aún las tienes en App.js) --- */
 /* Estilos para listas de solicitudes (Mis Solicitudes, Paneles Admin/Colaborador) */
 .dashboard-section h2, .dashboard-section h3 {
     color: var(--tdea-green-dark);
     margin-bottom: 20px;
     border-bottom: 1px solid var(--tdea-border-color);
     padding-bottom: 10px;
+    text-align: left; /* Alinea los títulos a la izquierda */
 }
 
 #solicitudes-list, #admin-solicitudes-list, #collab-solicitudes-list {
@@ -228,7 +224,7 @@ button:hover, .btn-primary:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: var(--tdea-light-blue-gray); /* Fondo para cada item de la lista */
+    background-color: var(--tdea-light-gray-bg); /* Fondo para cada item de la lista */
     padding: 15px 20px;
     margin-bottom: 10px;
     border-radius: 5px;
@@ -245,7 +241,6 @@ button:hover, .btn-primary:hover {
     font-size: 0.9em;
 }
 
-
 /* Estilos para estados de solicitud (en listas o detalles) */
 .status {
     padding: 5px 10px;
@@ -255,10 +250,9 @@ button:hover, .btn-primary:hover {
     color: var(--tdea-text-light);
     text-transform: uppercase;
 }
-
 .status.Recibido { background-color: #3498db; } /* Azul */
 .status.Pendiente { background-color: #f39c12; } /* Naranja */
-.status.Asignada { background-color: #2ecc71; } /* Verde */
+.status.Asignada { background-color: var(--tdea-green-dark); } /* Verde TdeA */
 .status.Enproceso { background-color: #9b59b6; } /* Morado */
 .status.Resuelto { background-color: #27ae60; } /* Verde oscuro */
 .status.Aprobada { background-color: #28a745; } /* Verde Bootstrap */
@@ -270,6 +264,7 @@ button:hover, .btn-primary:hover {
 /* Estilos de la vista de detalle de solicitud */
 .solicitud-detail {
     padding: 20px;
+    text-align: left; /* Alinea el texto a la izquierda en los detalles */
 }
 
 .solicitud-detail button {
@@ -300,8 +295,9 @@ button:hover, .btn-primary:hover {
     padding-top: 15px;
     border-top: 1px solid var(--tdea-border-color);
     display: flex;
-    flex-wrap: wrap; /* Para que los botones se envuelvan en pantallas pequeñas */
-    gap: 10px; /* Espacio entre botones */
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-start; /* Alinea los botones a la izquierda */
 }
 
 /* Estilos de comentarios */
@@ -309,6 +305,7 @@ button:hover, .btn-primary:hover {
     margin-top: 30px;
     padding-top: 20px;
     border-top: 1px solid var(--tdea-border-color);
+    text-align: left;
 }
 
 .comments-section h4 {
@@ -317,12 +314,12 @@ button:hover, .btn-primary:hover {
 }
 
 #comments-list {
-    background-color: var(--tdea-light-blue-gray);
+    background-color: var(--tdea-light-gray-bg);
     padding: 15px;
     border-radius: 5px;
     margin-bottom: 15px;
-    max-height: 250px; /* Limitar altura */
-    overflow-y: auto; /* Scroll si hay muchos comentarios */
+    max-height: 250px;
+    overflow-y: auto;
     border: 1px solid var(--tdea-border-color);
 }
 
@@ -348,40 +345,40 @@ button:hover, .btn-primary:hover {
     border: 1px solid var(--tdea-border-color);
     border-radius: 5px;
     box-sizing: border-box;
-    background-color: var(--tdea-text-light);
+    background-color: var(--tdea-white);
 }
 
 #add-comment-form button {
-    background-color: var(--tdea-green-dark);
+    background-color: var(--tdea-green-dark); /* Botón de comentario en verde TdeA */
     color: var(--tdea-text-light);
-    width: auto; /* Para que no ocupe todo el ancho */
+    width: auto;
 }
 
-/* Estilos para modales (pop-ups) - Ya los teníamos, pero revisados */
+/* Estilos para modales (pop-ups) */
 .modal {
-    display: none; /* Oculto por defecto */
-    position: fixed; /* Posición fija en la pantalla */
-    z-index: 1000; /* Se superpone a otros elementos, un valor alto */
+    display: none;
+    position: fixed;
+    z-index: 1000;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto; /* Habilitar scroll si el contenido es grande */
-    background-color: rgba(0,0,0,0.6); /* Fondo semi-transparente más oscuro */
-    display: flex; /* Centrar contenido con flexbox */
+    overflow: auto;
+    background-color: rgba(0,0,0,0.6);
+    display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .modal-content {
-    background-color: var(--tdea-text-light);
+    background-color: var(--tdea-white);
     padding: 30px;
     border: 1px solid #888;
     border-radius: 8px;
     box-shadow: 0 4px 10px var(--tdea-shadow-medium);
     position: relative;
     max-width: 500px;
-    width: 90%; /* Ajusta para pantallas pequeñas */
+    width: 90%;
     box-sizing: border-box;
     text-align: center;
 }
@@ -395,25 +392,25 @@ button:hover, .btn-primary:hover {
 .modal-content label {
     display: block;
     margin-bottom: 8px;
-    font-weight: bold;
+    font-weight: normal;
     text-align: left;
 }
 
 .modal-content select,
 .modal-content textarea,
-.modal-content input[type="text"] { /* Agregado input para el comentario al aprobar/rechazar */
+.modal-content input[type="text"] {
     width: 100%;
     padding: 10px;
     margin-bottom: 15px;
     border: 1px solid var(--tdea-border-color);
     border-radius: 5px;
-    background-color: var(--tdea-light-blue-gray);
+    background-color: var(--tdea-light-gray-bg);
     box-sizing: border-box;
 }
 
 .modal-content button {
     background-color: var(--tdea-green-dark);
-    color: white;
+    color: var(--tdea-text-light);
     padding: 12px 25px;
     border-radius: 5px;
     border: none;
@@ -428,7 +425,7 @@ button:hover, .btn-primary:hover {
     position: absolute;
     top: 10px;
     right: 20px;
-    line-height: 1; /* Para centrar bien el 'x' */
+    line-height: 1;
 }
 
 .close-button:hover,
@@ -440,59 +437,80 @@ button:hover, .btn-primary:hover {
 
 /* Footer */
 .main-footer {
-    background-color: var(--tdea-green-dark);
+    /* El footer no es visible en la imagen de referencia del login, lo podemos hacer casi invisible o eliminar */
+    /* Para esta vista, lo haré invisible para que coincida con la imagen */
+    display: none; /* Oculta el footer para que solo se vea la página de login */
+    /* background-color: var(--tdea-green-dark); 
     color: var(--tdea-text-light);
     text-align: center;
     padding: 20px;
-    margin-top: 40px; /* Espacio desde el contenido */
+    margin-top: auto; */
 }
 
 /* Responsive (ajustes básicos para pantallas pequeñas) */
 @media (max-width: 768px) {
     .main-header {
         flex-direction: column;
-        align-items: flex-start; /* Ajusta la alineación */
+        align-items: flex-start;
+        height: auto; /* Permite que el header se ajuste */
+        padding-bottom: 10px;
     }
     .header-content {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: center; /* Centrar elementos en móviles */
         gap: 10px;
     }
-    .main-header h1 {
-        font-size: 1.5em;
-    }
     .main-header nav ul {
-        flex-direction: column;
-        align-items: flex-start;
+        flex-direction: row; /* Mantener en línea los links del header */
+        justify-content: center;
         width: 100%;
-        margin-top: 15px;
+        margin-top: 10px;
     }
     .main-header nav ul li {
-        margin: 5px 0;
+        margin: 0 8px; /* Espacio entre links en móviles */
     }
 
     .main-layout {
-        flex-direction: column;
         padding-top: 10px;
-    }
-
-    .filters-section {
-        flex: auto;
-        width: auto;
-        margin-bottom: 20px;
+        margin-top: 0; /* Deshacer el ajuste negativo en móviles */
     }
 
     .content-section {
         padding: 20px;
+        max-width: 95%;
+        margin-top: 0; /* Deshacer el ajuste negativo en móviles */
+    }
+
+    .centered-tdea-logo {
+        height: 80px; /* Logo central más pequeño en móviles */
+        margin-bottom: 15px;
+    }
+
+    .tdea-title {
+        font-size: 2em;
     }
 
     .auth-forms {
-        padding: 20px;
+        padding: 0;
+        max-width: 100%;
+    }
+
+    .auth-forms input[type="email"],
+    .auth-forms input[type="password"],
+    .auth-forms input[type="text"],
+    .auth-forms select,
+    .auth-forms textarea {
+        max-width: 100%; /* Permite que los campos se expandan en móviles */
     }
 
     .modal-content {
         width: 95%;
-        margin: 5% auto; /* Más cerca del top */
+        margin: 5% auto;
+    }
+
+    /* Ocultar elementos de login/registro si App.js maneja la vista */
+    #login-form-container p, #register-form-container p {
+        display: none; /* Oculta los enlaces de "No tienes cuenta?" en móvil si no son prioritarios */
     }
 
     #solicitudes-list li, #admin-solicitudes-list li, #collab-solicitudes-list li {

@@ -3,33 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mesa de Ayuda CPM - TdeA</title>
-    <link rel="stylesheet" href="style.css">
-    </head>
+    <title>Mesa de Ayuda - TdeA</title> <link rel="stylesheet" href="style.css">
+</head>
 <body>
-    <header class="main-header"> <div class="container header-content">
-            <img src="./../src/assets/logo_tdea.png" alt="Logo Tecnológico de Antioquia" class="logo-tdea">
-            <h1>Mesa de Ayuda CPM</h1>
-            <nav>
-                <ul id="main-nav">
-                    </ul>
+
+    <header class="main-header">
+        <div class="container header-content">
+            <img src="../src/assets/logo_tdea.png" alt="Logo Tecnológico de Antioquia" class="logo-tdea-header"> <nav>
+                <ul id="header-nav-links">
+                    <li><a href="#" id="login-header-link">Iniciar sesión</a></li>
+                    <li><a href="#" id="register-header-link">Registro de usuarios</a></li>
+                </ul>
             </nav>
-            </div>
+        </div>
     </header>
 
-    <main class="main-layout container" id="app-content-wrapper"> <section id="app-content" class="content-section"> <h2 class="welcome-title">Bienvenido a la Mesa de Ayuda del Centro de Producción y Medios</h2>
-            <p class="welcome-message">Por favor, inicia sesión o regístrate para continuar.</p>
-
+    <main class="main-layout container" id="app-content-wrapper">
+        <section id="app-content" class="content-section">
+            <img src="../src/assets/logo_tdea.png" alt="Logo TdeA" class="centered-tdea-logo">
+            
             <section id="auth-section" class="auth-forms">
                 <div id="login-form-container">
-                    <h3>Iniciar Sesión</h3>
-                    <form id="login-form">
-                        <label for="login-email">Correo Electrónico:</label>
-                        <input type="email" id="login-email" required>
-                        <label for="login-password">Contraseña:</label>
-                        <input type="password" id="login-password" required>
-                        <button type="submit" class="btn-primary">Iniciar Sesión</button> </form>
-                    <p>¿No tienes cuenta? <a href="#" id="show-register">Regístrate aquí</a></p>
+                    <h3>Iniciar Sesión con Credenciales TdeA</h3> <button type="button" id="cas-login-button" class="btn-primary">
+                        Ingresar con usuario TdeA
+                    </button>
+                    
+                    <p>¿No tienes cuenta? <a href="#" id="show-register-link">Regístrate aquí</a></p>
                 </div>
 
                 <div id="register-form-container" style="display: none;">
@@ -52,7 +51,8 @@
 
                         <label for="register-roltdea">Rol en TdeA:</label>
                         <select id="register-roltdea" required>
-                            <option value="">Seleccione un rol</option> <option value="Estudiante">Estudiante</option>
+                            <option value="">Seleccione un rol</option> 
+                            <option value="Estudiante">Estudiante</option>
                             <option value="Profesor">Profesor</option>
                             <option value="Directivo">Directivo</option>
                             <option value="Administrativo">Administrativo</option>
@@ -63,7 +63,8 @@
 
                         <label for="register-sede">Sede:</label>
                         <select id="register-sede" required>
-                            <option value="">Seleccione una sede</option> <option value="Robledo">Robledo</option>
+                            <option value="">Seleccione una sede</option> 
+                            <option value="Robledo">Robledo</option>
                             <option value="Aburra sur">Aburrá sur</option>
                             <option value="Copacabana">Copacabana</option>
                             <option value="Regiones">Regiones</option>
@@ -71,32 +72,103 @@
                         </select>
 
                         <label for="register-facultad">Facultad/Dependencia:</label>
-                        <input type="text" id="register-facultad" required> <button type="submit" class="btn-primary">Registrarse</button> </form>
-                    <p>¿Ya tienes cuenta? <a href="#" id="show-login">Iniciar Sesión</a></p>
+                        <input type="text" id="register-facultad" required> 
+                        <button type="submit" class="btn-primary">Registrarse</button>
+                    </form>
+                    <p>¿Ya tienes cuenta? <a href="#" id="show-login-link">Iniciar Sesión</a></p>
                 </div>
             </section>
-        </section>
+
+            <div id="dashboard-view" style="display: none;"></div>
+            <div id="create-request-view" style="display: none;"></div>
+            <div id="my-requests-view" style="display: none;"></div>
+            <div id="request-detail-view" style="display: none;"></div>
+            <div id="admin-panel-view" style="display: none;"></div>
+            <div id="collab-panel-view" style="display: none;"></div>
+
+            <div id="assign-collab-modal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <span class="close-button">&times;</span>
+                    <h4>Asignar Colaborador</h4>
+                    <form id="assign-collab-form">
+                        <label for="collab-select">Seleccionar Colaborador:</label>
+                        <select id="collab-select" required>
+                            </select>
+                        <button type="submit">Asignar</button>
+                    </form>
+                </div>
+            </div>
+            <div id="update-status-modal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <span class="close-button">&times;</span>
+                    <h4>Actualizar Estado</h4>
+                    <form id="update-status-form">
+                        <label for="status-select">Seleccionar Estado:</label>
+                        <select id="status-select" required>
+                            </select>
+                        <button type="submit">Actualizar</button>
+                    </form>
+                </div>
+            </div>
+            </section>
     </main>
 
-    <footer class="main-footer"> <div class="container">
-            <p>&copy; 2025 Tecnológico de Antioquia - Centro de Producción y Medios</p>
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; 2024 Tecnológico de Antioquia - Centro de Producción y Medios</p>
         </div>
     </footer>
 
-    <script src="./../src/App.js"></script>
+    <script src="../src/App.js"></script>
     <script>
         // Inicializa la aplicación al cargar la página
+        // Asegúrate de que 'renderApp', 'showLoginForm', 'isUserLoggedIn', 'handleLogout'
+        // están definidos y accesibles globalmente en tu App.js si los usas aquí.
         document.addEventListener('DOMContentLoaded', renderApp);
-        // Si tienes un botón "Iniciar sesión con cuenta local" en el header, este listener lo controlaría
-        document.getElementById('login-header-button')?.addEventListener('click', (e) => {
+
+        // Controladores de eventos para mostrar/ocultar formularios de login/registro
+        // Estos deben estar en App.js idealmente, pero se pueden dejar aquí si App.js los expone.
+        document.getElementById('show-register-link')?.addEventListener('click', (e) => {
             e.preventDefault();
-            if (!isUserLoggedIn()) {
+            document.getElementById('login-form-container').style.display = 'none';
+            document.getElementById('register-form-container').style.display = 'block';
+        });
+
+        document.getElementById('show-login-link')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('register-form-container').style.display = 'none';
+            document.getElementById('login-form-container').style.display = 'block';
+        });
+
+        // Manejo de los enlaces del header (Iniciar sesión, Registro de usuarios)
+        document.getElementById('login-header-link')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (typeof showLoginForm === 'function') { // Asegúrate de que showLoginForm exista
                 showLoginForm();
                 document.getElementById('auth-section').scrollIntoView({ behavior: 'smooth' });
             } else {
-                handleLogout(); // O la lógica para un menú de usuario/perfil
+                // Si showLoginForm no existe, simplemente muestra el contenedor de login
+                document.getElementById('login-form-container').style.display = 'block';
+                document.getElementById('register-form-container').style.display = 'none';
+                document.getElementById('auth-section').scrollIntoView({ behavior: 'smooth' });
             }
         });
+
+        document.getElementById('register-header-link')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (typeof showRegisterForm === 'function') { // Asegúrate de que showRegisterForm exista
+                showRegisterForm();
+                document.getElementById('auth-section').scrollIntoView({ behavior: 'smooth' });
+            } else {
+                 // Si showRegisterForm no existe, simplemente muestra el contenedor de registro
+                document.getElementById('login-form-container').style.display = 'none';
+                document.getElementById('register-form-container').style.display = 'block';
+                document.getElementById('auth-section').scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+
+        // Asegúrate de que tu App.js maneje la lógica de inicio de sesión y registro
+        // así como el enrutamiento de las diferentes vistas.
     </script>
 </body>
 </html>
