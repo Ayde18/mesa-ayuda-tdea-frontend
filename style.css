@@ -1,0 +1,507 @@
+/* style.css */
+
+/* Variables de color (para facilitar cambios futuros) */
+:root {
+    --tdea-green-dark: #2F6C4C; /* Estimado del verde oscuro del logo y botones principales */
+    --tdea-green-light: #4A9C6F; /* Un verde un poco más claro para hover o acentos */
+    --tdea-light-blue-gray: #F0F4F7; /* Fondo de filtros, campos, etc. */
+    --tdea-soft-orange: #F9E79F; /* Naranja/Amarillo de los botones de carrusel */
+    --tdea-text-dark: #333; /* Texto principal oscuro */
+    --tdea-text-light: #fff; /* Texto en fondos oscuros */
+    --tdea-border-color: #ddd; /* Color de borde general para inputs, etc. */
+    --tdea-shadow-light: rgba(0, 0, 0, 0.05);
+    --tdea-shadow-medium: rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos Generales */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Fuente más moderna */
+    margin: 0;
+    padding: 0;
+    background-color: var(--tdea-light-blue-gray); /* Fondo general de la página */
+    color: var(--tdea-text-dark);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px; /* Padding horizontal para el contenido */
+}
+
+/* Header */
+.main-header { /* Clase aplicada en index.html */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: var(--tdea-text-light); /* Fondo blanco */
+    box-shadow: 0 2px 4px var(--tdea-shadow-medium);
+    border-bottom: 1px solid var(--tdea-border-color);
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%; /* Para que ocupe todo el ancho del container */
+}
+
+.logo-tdea {
+    height: 50px; /* Ajusta según el tamaño de tu logo */
+    margin-right: 20px;
+}
+
+.main-header h1 {
+    color: var(--tdea-green-dark);
+    margin: 0;
+    font-size: 1.8em;
+}
+
+.main-header nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.main-header nav ul li {
+    margin-left: 20px;
+}
+
+.main-header nav ul li span { /* Estilo para "Hola, Usuario" */
+    color: var(--tdea-text-dark);
+    font-weight: normal;
+}
+
+.main-header nav ul li a {
+    text-decoration: none;
+    color: var(--tdea-text-dark);
+    font-weight: bold;
+    padding: 5px 0;
+    transition: color 0.3s ease;
+}
+
+.main-header nav ul li a:hover {
+    color: var(--tdea-green-dark);
+}
+
+/* Botones genéricos */
+button, .btn-primary {
+    cursor: pointer;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+    background-color: var(--tdea-green-dark);
+    color: var(--tdea-text-light);
+}
+
+button:hover, .btn-primary:hover {
+    background-color: var(--tdea-green-light);
+    transform: translateY(-2px); /* Pequeño efecto al pasar el ratón */
+}
+
+/* Tipos de botones específicos */
+.btn-assign, .btn-approve, .btn-resolve, .btn-reopen, .btn-process {
+    background-color: var(--tdea-green-dark); /* Verde principal para acciones positivas */
+    margin-right: 10px; /* Espacio entre botones */
+}
+.btn-reject, .btn-return { /* Para rechazar o devolver para correcciones */
+    background-color: #e74c3c; /* Rojo para acciones negativas */
+    color: var(--tdea-text-light);
+    margin-right: 10px;
+}
+.btn-rate { /* Para calificar */
+    background-color: #f39c12; /* Naranja para calificación */
+    color: var(--tdea-text-light);
+}
+
+
+/* Layout Principal (para contenido debajo del header) */
+.main-layout {
+    display: flex;
+    padding-top: 20px; /* Espacio desde el header */
+    gap: 20px; /* Espacio entre la barra lateral (si la tuvieras) y el contenido principal */
+}
+
+/* Contenido Principal (donde App.js renderiza las vistas) */
+.content-section {
+    flex-grow: 1; /* Ocupa el espacio restante */
+    background-color: var(--tdea-text-light); /* Fondo blanco */
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px var(--tdea-shadow-medium);
+}
+
+/* Estilos de las secciones iniciales */
+.welcome-title {
+    color: var(--tdea-green-dark);
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.welcome-message {
+    text-align: center;
+    color: var(--tdea-text-dark);
+    margin-bottom: 30px;
+}
+
+
+/* Sección de autenticación y formularios */
+.auth-forms { /* Clase aplicada en index.html */
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 30px;
+    background-color: var(--tdea-light-blue-gray); /* Fondo gris/azul claro */
+    border-radius: 8px;
+    box-shadow: 0 2px 8px var(--tdea-shadow-medium);
+}
+
+.auth-forms h3 {
+    color: var(--tdea-green-dark);
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.auth-forms form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Espacio entre elementos del formulario */
+}
+
+.auth-forms label {
+    font-weight: bold;
+    color: var(--tdea-text-dark);
+    margin-bottom: 5px;
+}
+
+.auth-forms input[type="email"],
+.auth-forms input[type="password"],
+.auth-forms input[type="text"],
+.auth-forms select,
+.auth-forms textarea {
+    padding: 12px;
+    border: 1px solid var(--tdea-border-color);
+    border-radius: 5px;
+    background-color: var(--tdea-text-light); /* Blanco para campos de entrada */
+    width: calc(100% - 24px); /* Ajusta para padding */
+    box-sizing: border-box; /* Incluye padding en el ancho */
+}
+
+.auth-forms button[type="submit"] {
+    margin-top: 20px;
+    width: 100%;
+}
+
+.auth-forms p {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.auth-forms p a {
+    color: var(--tdea-green-dark);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.auth-forms p a:hover {
+    text-decoration: underline;
+}
+
+/* Estilos para listas de solicitudes (Mis Solicitudes, Paneles Admin/Colaborador) */
+.dashboard-section h2, .dashboard-section h3 {
+    color: var(--tdea-green-dark);
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--tdea-border-color);
+    padding-bottom: 10px;
+}
+
+#solicitudes-list, #admin-solicitudes-list, #collab-solicitudes-list {
+    list-style: none;
+    padding: 0;
+}
+
+#solicitudes-list li, #admin-solicitudes-list li, #collab-solicitudes-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--tdea-light-blue-gray); /* Fondo para cada item de la lista */
+    padding: 15px 20px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px var(--tdea-shadow-light);
+}
+
+#solicitudes-list li div h4, #admin-solicitudes-list li div h4, #collab-solicitudes-list li div h4 {
+    color: var(--tdea-text-dark);
+    margin: 0 0 5px 0;
+}
+#solicitudes-list li div p, #admin-solicitudes-list li div p, #collab-solicitudes-list li div p {
+    color: var(--tdea-text-dark);
+    margin: 0;
+    font-size: 0.9em;
+}
+
+
+/* Estilos para estados de solicitud (en listas o detalles) */
+.status {
+    padding: 5px 10px;
+    border-radius: 3px;
+    font-size: 0.8em;
+    font-weight: bold;
+    color: var(--tdea-text-light);
+    text-transform: uppercase;
+}
+
+.status.Recibido { background-color: #3498db; } /* Azul */
+.status.Pendiente { background-color: #f39c12; } /* Naranja */
+.status.Asignada { background-color: #2ecc71; } /* Verde */
+.status.Enproceso { background-color: #9b59b6; } /* Morado */
+.status.Resuelto { background-color: #27ae60; } /* Verde oscuro */
+.status.Aprobada { background-color: #28a745; } /* Verde Bootstrap */
+.status.Rechazada { background-color: #dc3545; } /* Rojo Bootstrap */
+.status.Reabierta { background-color: #e67e22; } /* Naranja oscuro */
+.status.Devueltaparacorrecciones { background-color: #c0392b; } /* Rojo más fuerte */
+
+
+/* Estilos de la vista de detalle de solicitud */
+.solicitud-detail {
+    padding: 20px;
+}
+
+.solicitud-detail button {
+    margin-bottom: 20px;
+    background-color: #6c757d; /* Gris para volver */
+    color: white;
+}
+.solicitud-detail button:hover {
+    background-color: #5a6268;
+}
+
+.solicitud-detail h3 {
+    color: var(--tdea-green-dark);
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.solicitud-detail p {
+    margin-bottom: 8px;
+}
+
+.solicitud-detail strong {
+    color: var(--tdea-green-dark);
+}
+
+.actions {
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 1px solid var(--tdea-border-color);
+    display: flex;
+    flex-wrap: wrap; /* Para que los botones se envuelvan en pantallas pequeñas */
+    gap: 10px; /* Espacio entre botones */
+}
+
+/* Estilos de comentarios */
+.comments-section {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid var(--tdea-border-color);
+}
+
+.comments-section h4 {
+    color: var(--tdea-green-dark);
+    margin-bottom: 15px;
+}
+
+#comments-list {
+    background-color: var(--tdea-light-blue-gray);
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    max-height: 250px; /* Limitar altura */
+    overflow-y: auto; /* Scroll si hay muchos comentarios */
+    border: 1px solid var(--tdea-border-color);
+}
+
+.comment-item {
+    border-bottom: 1px dashed var(--tdea-border-color);
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.comment-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.comment-item p {
+    margin: 0;
+}
+
+#add-comment-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid var(--tdea-border-color);
+    border-radius: 5px;
+    box-sizing: border-box;
+    background-color: var(--tdea-text-light);
+}
+
+#add-comment-form button {
+    background-color: var(--tdea-green-dark);
+    color: var(--tdea-text-light);
+    width: auto; /* Para que no ocupe todo el ancho */
+}
+
+/* Estilos para modales (pop-ups) - Ya los teníamos, pero revisados */
+.modal {
+    display: none; /* Oculto por defecto */
+    position: fixed; /* Posición fija en la pantalla */
+    z-index: 1000; /* Se superpone a otros elementos, un valor alto */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* Habilitar scroll si el contenido es grande */
+    background-color: rgba(0,0,0,0.6); /* Fondo semi-transparente más oscuro */
+    display: flex; /* Centrar contenido con flexbox */
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: var(--tdea-text-light);
+    padding: 30px;
+    border: 1px solid #888;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px var(--tdea-shadow-medium);
+    position: relative;
+    max-width: 500px;
+    width: 90%; /* Ajusta para pantallas pequeñas */
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.modal-content h4 {
+    color: var(--tdea-green-dark);
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.modal-content label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    text-align: left;
+}
+
+.modal-content select,
+.modal-content textarea,
+.modal-content input[type="text"] { /* Agregado input para el comentario al aprobar/rechazar */
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid var(--tdea-border-color);
+    border-radius: 5px;
+    background-color: var(--tdea-light-blue-gray);
+    box-sizing: border-box;
+}
+
+.modal-content button {
+    background-color: var(--tdea-green-dark);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.close-button {
+    color: #aaa;
+    font-size: 32px;
+    font-weight: bold;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    line-height: 1; /* Para centrar bien el 'x' */
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: var(--tdea-text-dark);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Footer */
+.main-footer {
+    background-color: var(--tdea-green-dark);
+    color: var(--tdea-text-light);
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px; /* Espacio desde el contenido */
+}
+
+/* Responsive (ajustes básicos para pantallas pequeñas) */
+@media (max-width: 768px) {
+    .main-header {
+        flex-direction: column;
+        align-items: flex-start; /* Ajusta la alineación */
+    }
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .main-header h1 {
+        font-size: 1.5em;
+    }
+    .main-header nav ul {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+        margin-top: 15px;
+    }
+    .main-header nav ul li {
+        margin: 5px 0;
+    }
+
+    .main-layout {
+        flex-direction: column;
+        padding-top: 10px;
+    }
+
+    .filters-section {
+        flex: auto;
+        width: auto;
+        margin-bottom: 20px;
+    }
+
+    .content-section {
+        padding: 20px;
+    }
+
+    .auth-forms {
+        padding: 20px;
+    }
+
+    .modal-content {
+        width: 95%;
+        margin: 5% auto; /* Más cerca del top */
+    }
+
+    #solicitudes-list li, #admin-solicitudes-list li, #collab-solicitudes-list li {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    #solicitudes-list li button, #admin-solicitudes-list li button, #collab-solicitudes-list li button {
+        width: 100%;
+        margin-top: 10px;
+    }
+}
